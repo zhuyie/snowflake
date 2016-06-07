@@ -63,8 +63,9 @@ func (s *Snowflake) Next() int64 {
 			s.sequence = 0
 		}
 		if s.sequence < maxSeq {
+			ID := s.lastTime<<timeShift | int64(s.node)<<nodeShift | int64(s.sequence)
 			s.sequence++
-			return s.lastTime<<timeShift | int64(s.node)<<nodeShift | int64(s.sequence)
+			return ID
 		}
 		// Retry
 		runtime.Gosched()
