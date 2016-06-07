@@ -6,10 +6,10 @@ import (
 )
 
 func TestSnowflake(t *testing.T) {
-	sf0, _ := NewSnowflake(0)
-	sf1, _ := NewSnowflake(1)
-	map0 := make(map[uint64]bool)
-	map1 := make(map[uint64]bool)
+	sf0 := NewSnowflake(0)
+	sf1 := NewSnowflake(1)
+	map0 := make(map[int64]bool)
+	map1 := make(map[int64]bool)
 
 	for i := 0; i < 2000; i++ {
 		v0 := sf0.Next()
@@ -46,11 +46,11 @@ func TestSnowflake(t *testing.T) {
 	}
 }
 
-var result uint64
+var result int64
 
 func BenchmarkSnowflake(b *testing.B) {
-	sf, _ := NewSnowflake(99)
-	var v uint64
+	sf := NewSnowflake(99)
+	var v int64
 	for n := 0; n < b.N; n++ {
 		// record the result prevent the compiler eliminating the function call.
 		v = sf.Next()
