@@ -13,6 +13,8 @@ const (
 	nodeShift = 12
 
 	twitterEpoch int64 = 1288834974657
+
+	maxMoveBackwards int64 = 3000 // milliseconds
 )
 
 // Snowflake is a unique ID generation algorithm which opensourced by Twitter.
@@ -42,10 +44,10 @@ func NewSnowflakeEpoch(node uint16, epoch int64) *Snowflake {
 
 func (s *Snowflake) timeGen() int64 {
 	now := time.Now().UnixNano() / 1000000 // in milliseconds
-	if now > s.epoch {
-		return now - s.epoch
+	if now < s.epoch {
+		panic("Time before Epoch")
 	}
-	return 0
+	return now - s.epoch
 }
 
 // Next generates a unique 64-bit integer.
@@ -56,6 +58,10 @@ func (s *Snowflake) Next() int64 {
 	for {
 		now := s.timeGen()
 		if now < s.lastTime {
+			if s.lastTime - now <= maxMoveBackwards {
+				time.Sleep(time.Millisecond)
+				continue
+			}
 			panic("Time moved backwards")
 		}
 		if now > s.lastTime {
