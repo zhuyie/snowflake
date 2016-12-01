@@ -1,6 +1,7 @@
 package snowflake
 
 import (
+	"log"
 	"runtime"
 	"sync"
 	"time"
@@ -13,8 +14,6 @@ const (
 	nodeShift = 12
 
 	twitterEpoch int64 = 1288834974657
-
-	maxMoveBackwards int64 = 3000 // milliseconds
 )
 
 // Snowflake is a unique ID generation algorithm which opensourced by Twitter.
@@ -55,15 +54,18 @@ func (s *Snowflake) Next() int64 {
 	s.locker.Lock()
 	defer s.locker.Unlock()
 
+	var waitingForLifeToGetBackToNormal bool
 	for {
 		now := s.timeGen()
 		if now < s.lastTime {
-			if s.lastTime - now <= maxMoveBackwards {
-				time.Sleep(time.Millisecond)
-				continue
+			if !waitingForLifeToGetBackToNormal {
+				waitingForLifeToGetBackToNormal = true
+				log.Printf("snowflake: time moved backwards: %v ms", s.lastTime-now)
 			}
-			panic("Time moved backwards")
+			time.Sleep(time.Millisecond)
+			continue
 		}
+		waitingForLifeToGetBackToNormal = false
 		if now > s.lastTime {
 			s.lastTime = now
 			s.sequence = 0
