@@ -1,6 +1,7 @@
 package snowflake
 
 import (
+	"fmt"
 	"testing"
 	"time"
 )
@@ -43,6 +44,24 @@ func TestSnowflake(t *testing.T) {
 		}
 
 		time.Sleep(time.Millisecond)
+	}
+}
+
+func TestInvalidNode(t *testing.T) {
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Printf("TestInvalidNode panic: %v\n", err)
+		}
+	}()
+	NewSnowflake(4096)
+}
+
+func TestEpoch(t *testing.T) {
+	sf0 := NewSnowflakeEpoch(0, 100)
+	v0 := sf0.Next()
+	v1 := sf0.Next()
+	if v0 == v1 {
+		t.Fatalf("v0 equals v1, should different")
 	}
 }
 
