@@ -84,6 +84,17 @@ func TestVeryLargeEpoch(t *testing.T) {
 	sf0.Next()
 }
 
+func TestTimeMovedBackwards(t *testing.T) {
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Printf("TestTimeMovedBackwards panic: %v\n", err)
+		}
+	}()
+	sf0 := NewSnowflake(0)
+	sf0.lastTime = sf0.timeGen() + 1000
+	sf0.Next()
+}
+
 var result int64
 
 func BenchmarkSnowflake(b *testing.B) {
