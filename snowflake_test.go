@@ -97,11 +97,13 @@ func TestTimeMovedBackwards(t *testing.T) {
 
 func TestReachedMaxSequence(t *testing.T) {
 	sf0 := NewSnowflake(0)
-	var v int64
 	for i := 0; i < 10000; i++ {
-		v = sf0.Next()
+		v0 := sf0.Next()
+		v1 := sf0.Next()
+		if v0 == v1 {
+			t.Fatalf("v0 equals v1, should different")
+		}
 	}
-	t.Logf("v = %v", v)
 }
 
 var result int64
