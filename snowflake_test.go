@@ -65,6 +65,25 @@ func TestEpoch(t *testing.T) {
 	}
 }
 
+func TestEpochInvalidNode(t *testing.T) {
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Printf("TestEpochInvalidNode panic: %v\n", err)
+		}
+	}()
+	NewSnowflakeEpoch(4096, 100)
+}
+
+func TestVeryLargeEpoch(t *testing.T) {
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Printf("TestVeryLargeEpoch panic: %v\n", err)
+		}
+	}()
+	sf0 := NewSnowflakeEpoch(0, 9223372036854770000)
+	sf0.Next()
+}
+
 var result int64
 
 func BenchmarkSnowflake(b *testing.B) {
