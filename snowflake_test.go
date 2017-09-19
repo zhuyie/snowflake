@@ -91,7 +91,9 @@ func TestTimeMovedBackwards(t *testing.T) {
 		}
 	}()
 	sf0 := NewSnowflake(0)
-	sf0.lastTime = sf0.timeGen() + 1000
+	sf0.lastTime, sf0.lastTimestamp = sf0.ts()
+	sf0.lastTime = sf0.lastTime.Add(time.Second)
+	sf0.lastTimestamp += 1000
 	sf0.Next()
 }
 
