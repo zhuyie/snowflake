@@ -36,7 +36,17 @@ func NewSnowflakeEpoch(node uint16, epoch int64) *Snowflake {
 	if node > maxNode {
 		panic("node should between 0 - 1023")
 	}
-	return &Snowflake{epoch: epoch, node: node}
+	s := &Snowflake{
+		epoch:    epoch,
+		lastTime: time.Now(),
+		node:     node,
+	}
+	tInMS := s.lastTime.UnixNano() / 1000000 // in milliseconds
+	if tInMS < s.epoch {
+		panic("Time before Epoch")
+	}
+	s.lastTimestamp = tInMS - s.epoch
+	return s
 }
 
 // Next generates a unique 64-bit integer.
